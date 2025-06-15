@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
+import { useLocation ,Link} from "react-router-dom";
 import { fetchProfiles } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import SearchProfiles from "../components/SearchProfiles";
 
 export default function Explore() {
   const [profiles, setProfiles] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  const [searchTerm, setSearchTerm] = useState("");
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const search = searchParams.get("search"); // initial search from Home, if any
+
+  const [searchTerm, setSearchTerm] = useState(search || ""); // control search with state
 
   useEffect(() => {
     async function loadProfiles(){
@@ -17,7 +23,7 @@ export default function Explore() {
         setProfiles(data);
       } catch (err) {
         setError(err);
-      } finally{
+      } finally {
         setLoading(false);
       }
     }
@@ -36,14 +42,27 @@ export default function Explore() {
 
   return (
     <div className="p-4">
+      {/* Search input for quick search */}
       <div className="p-4 shadow-md rounded mb-6">
-        <SearchProfiles />
+        {/* You can reuse SearchProfiles or simply put a search field here */}
+        {/* If you want, you can connect SearchProfiles to setSearchTerm */}
+        <input
+          type="text"
+          placeholder="Search by service, area, or name"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 w-full border rounded"
+        />
       </div>
 
-      <h1 className="text-2xl font-semibold mb-4">Explore Services</h1>
+      <h1 className="text-2xl font-semibold mb-4">
+        Explore Services
+      </h1>
+
       <div className="grid gap-4">
         {filtered.length > 0 ? (
           filtered.map((profile) => (
+            <Link to={`/profiles/${profile._id}`} key={profile._id}>
             <div key={profile._id} className="p-4 border rounded-md">
               <img src={profile.photo || "/fallback.jpg"} alt="" className="w-32 h-32 object-cover mb-4" />
               <h2 className="text-lg font-semibold">{profile.name}</h2>
@@ -58,6 +77,7 @@ export default function Explore() {
                 Contact on WhatsApp
               </a>
             </div>
+            </Link>
           ))
         ) : (
           <p>No profiles match your search</p>
@@ -67,3 +87,4 @@ export default function Explore() {
     </div>
   )
 }
+
