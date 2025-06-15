@@ -1,0 +1,12 @@
+// models/Profile.js
+const mongoose = require('mongoose')
+
+const ProfileSchema = new mongoose.Schema({ 
+  name: { type: String, required: true },
+  serviceType: { type: String, required: true },
+  area: { type: String, required: true },
+  whatsapp: { type: String, required: true },
+  photoURL: { type: String }
+}, { timestamps: true });
+
+module.exports = mongoose.model('Profile', ProfileSchema);
