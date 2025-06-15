@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchProfiles } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SearchProfiles from "../components/SearchProfiles";
 
 export default function Explore() {
   const [profiles, setProfiles] = useState([]);
@@ -35,13 +36,10 @@ export default function Explore() {
 
   return (
     <div className="p-4">
-      <input
-        type="text"
-        placeholder="Search by service, area or name"
-        className="border p-2 mb-4 w-full"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="p-4 shadow-md rounded mb-6">
+        <SearchProfiles />
+      </div>
+
       <h1 className="text-2xl font-semibold mb-4">Explore Services</h1>
       <div className="grid gap-4">
         {filtered.length > 0 ? (
