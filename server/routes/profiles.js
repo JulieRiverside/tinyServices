@@ -1,45 +1,33 @@
-// routes/profiles.js
-const express = require('express')
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-const { uploadToCloudinary } = require('../cloudinary');
-const Profile = require('../models/Profile')
-const router = express.Router()
+// server/routes/profiles.js
+const express = require('express');
+const Profile = require('../models/Profile'); // your Mongoose Model
+const upload = require('../cloudinaryStorage'); // multer configured with Cloudinary storage
+
+const router = express.Router();
+
 
 // CREATE
-router.post("/", async (req, res) => {
-  try {
-    const profile = await Profile.create(req.body);
-    res.json(profile);
-  } catch (err) {
-    res.status(400).json({error:'Unable to create profile'})
-  }
-});
-
-router.post('/profiles', upload.single('photo'), async (req, res) => {
+router.post("/", upload.single("photo"), async (req, res) => {
+  console.log('req.body >>>', req.body);
+  console.log('req.file >>>', req.file);
   try {
     const { name, serviceType, area, whatsapp } = req.body;
 
     if (!name || !serviceType || !area || !whatsapp) {
       return res.status(400).json({ message: "All fields are required" });
     }
-  
-    let photo = '';
-    if (req.file) {
-      const result = await uploadToCloudinary(req.file.path);
-      photo = result.secure_url;
-    }
-  
-    const profile = new Profile({ name, serviceType, area, whatsapp, photo });
-    await profile.save();
+    // photo is already a Cloudinary URL thanks to multer-storage-cloudinary
+    const photo = req.file?.path;
+
+    const profile = await Profile.create({ name, serviceType, area, whatsapp, photo });
 
     res.json(profile);
   } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: err?.message || "Server Error" });
   }
 });
 
-// GET ALL or Filter by area and service
+// GET all or filter by area, service
 router.get("/", async (req, res) => {
   const { area, service } = req.query;
   let filter = {};
@@ -51,16 +39,16 @@ router.get("/", async (req, res) => {
   res.json(profiles);
 });
 
-// GET BY ID
+// GET by ID
 router.get("/:id", async (req, res) => {
   try {
     const profile = await Profile.findById(req.params.id);
     res.json(profile);
   } catch (err) {
-    res.status(404).json({error:'Profile not found'})
+    res.status(404).json({ error:'Profile not found' })
   }
 });
 
 // (PUT and DELETE can be added later if needed)
 
-module.exports = router
+module.exports = router;

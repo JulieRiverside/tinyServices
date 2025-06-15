@@ -1,58 +1,77 @@
-// src/pages/CreateProfile.jsx
+// // src/pages/CreateProfile.jsx
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateProfile() {
-  const [form, setForm] = useState({ name: "", serviceType: "", area: "", whatsapp: ""});
+  const [form, setForm] = useState({ name: "", serviceType: "", area: "", whatsapp: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
   const navigate = useNavigate();
-
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   function handleFileChange(e) {
+  if (e.target.files && e.target.files.length > 0) {
     setPhotoFile(e.target.files[0]);
+    console.log('File selected!', e.target.files[0]);
   }
+}
   
   async function handleSubmit(e) {
   e.preventDefault();
 
   setLoading(true);
   setError(null);
-  try{
-    const formData = new FormData();
+  
+  console.log('photoFile at submission?', photoFile);
+  console.log('form fields?', form);
+  
+  try {
+    let res;
 
-    formData.append("name", form.name);
-    formData.append("serviceType", form.serviceType);
-    formData.append("area", form.area);
-    formData.append("whatsapp", form.whatsapp);
-    if (photoFile) formData.append("photo", photoFile);
-
-    const res = await fetch("http://localhost:5000/api/profiles", { // adjust route
+    if (photoFile) {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("serviceType", form.serviceType);
+      formData.append("area", form.area);
+      formData.append("whatsapp", form.whatsapp);
+      formData.append("photo", photoFile);
+  
+      res = await fetch("http://localhost:5000/api/profiles", { 
         method: "POST",
         body: formData,
-    });
+      });
+
+    } else {
+      res = await fetch("http://localhost:5000/api/profiles", { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    }
+    
 
     if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(errorText);
-      }
+      const errorText = await res.text();
+      console.log('Server responded with raw text:\n', errorText);
+      throw new Error('Server Error');
+    }
   
     const newProfile = await res.json();
 
-      // Redirect to the newly created profile's page
     navigate(`/u/${newProfile._id}`);
-    } catch (err) {
-        setError(err?.message || "Submission failed.");
-    } finally {
-      setLoading(false);
-    }
-}
 
+  } catch (err) {
+    setError(err?.message || "Submission failed.");
+    console.error('Submission Error!', err);
+  } finally {
+    setLoading(false);
+  }
+}
 
   
   return (
@@ -86,6 +105,7 @@ export default function CreateProfile() {
           required
           className="p-2 border rounded"
         />
+        
         <input
           name="whatsapp"
           value={form.whatsapp}
@@ -96,7 +116,7 @@ export default function CreateProfile() {
         />
         <input
           type="file"
-          accept="image/*"
+          name="photo"
           onChange={handleFileChange}
           className="p-2 border rounded"
         />
