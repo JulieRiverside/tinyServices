@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchProfile } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
+import { toast } from "react-toastify";
 
 export default function Profile() {
   const { username } = useParams();
@@ -17,9 +18,11 @@ export default function Profile() {
       try {
         const data = await fetchProfile(username);
         setProfile(data);
+        toast.success("Profile loaded successfully!");
         setError(null);
       } catch (err) {
         setError(err);
+        toast.error("Failed to load profile.");
       }finally{
         setLoading(false);
       }
