@@ -63,7 +63,7 @@ export default function CreateProfile() {
   
     const newProfile = await res.json();
 
-    navigate(`/u/${newProfile._id}`);
+    navigate(`/profiles/${newProfile._id}`);
 
   } catch (err) {
     setError(err?.message || "Submission failed.");
