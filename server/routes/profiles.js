@@ -1,5 +1,8 @@
 // routes/profiles.js
 const express = require('express')
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+const { uploadToCloudinary } = require('../cloudinary');
 const Profile = require('../models/Profile')
 const router = express.Router()
 
@@ -13,13 +16,18 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post('/profiles', async (req, res) => {
+router.post('/profiles', upload.single('photo'), async (req, res) => {
   try {
-    // photo is base64 in this case
-    const { name, serviceType, area, whatsapp, photo } = req.body;
+    const { name, serviceType, area, whatsapp } = req.body;
 
     if (!name || !serviceType || !area || !whatsapp) {
       return res.status(400).json({ message: "All fields are required" });
+    }
+  
+    let photo = '';
+    if (req.file) {
+      const result = await uploadToCloudinary(req.file.path);
+      photo = result.secure_url;
     }
   
     const profile = new Profile({ name, serviceType, area, whatsapp, photo });

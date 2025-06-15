@@ -6,32 +6,35 @@ import { useNavigate } from "react-router-dom";
 export default function CreateProfile() {
   const [form, setForm] = useState({ name: "", serviceType: "", area: "", whatsapp: "" ,photo: ""});
   const navigate = useNavigate();
+  const [photoFile, setPhotoFile] = useState(null);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   function handleFileChange(e) {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      setForm({ ...form, photo: reader.result });
-    };
-    reader.readAsDataURL(file);
+    setPhotoFile(e.target.files[0]);
   }
   
   async function handleSubmit(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const newProfile = await createProfile(form);
-      navigate(`/u/${newProfile.username}`);
-    } catch (err) {
-      console.error(err);
-      alert("Error creating profile.");
-    }
-  }
+  const formData = new FormData();
+
+  formData.append("name", form.name);
+  formData.append("serviceType", form.serviceType);
+  formData.append("area", form.area);
+  formData.append("whatsapp", form.whatsapp);
+  formData.append("photo", photoFile); // photoFile comes from handleFileChange
+
+  const res = await fetch("http://localhost:5000/api/proprofiles", { // adjust route
+    method: "POST",
+    body: formData,
+  });
+
+  const newProfile = await res.json();
+  navigate(`/u/${newProfile._id}`);
+}
   
   return (
     <div className="p-4">
