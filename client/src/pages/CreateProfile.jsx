@@ -1,12 +1,14 @@
 // src/pages/CreateProfile.jsx
 import { useState } from "react";
-import { createProfile } from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateProfile() {
-  const [form, setForm] = useState({ name: "", serviceType: "", area: "", whatsapp: "" ,photo: ""});
-  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", serviceType: "", area: "", whatsapp: ""});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
+  const navigate = useNavigate();
+
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,26 +21,46 @@ export default function CreateProfile() {
   async function handleSubmit(e) {
   e.preventDefault();
 
-  const formData = new FormData();
+  setLoading(true);
+  setError(null);
+  try{
+    const formData = new FormData();
 
-  formData.append("name", form.name);
-  formData.append("serviceType", form.serviceType);
-  formData.append("area", form.area);
-  formData.append("whatsapp", form.whatsapp);
-  formData.append("photo", photoFile); // photoFile comes from handleFileChange
+    formData.append("name", form.name);
+    formData.append("serviceType", form.serviceType);
+    formData.append("area", form.area);
+    formData.append("whatsapp", form.whatsapp);
+    if (photoFile) formData.append("photo", photoFile);
 
-  const res = await fetch("http://localhost:5000/api/proprofiles", { // adjust route
-    method: "POST",
-    body: formData,
-  });
+    const res = await fetch("http://localhost:5000/api/profiles", { // adjust route
+        method: "POST",
+        body: formData,
+    });
 
-  const newProfile = await res.json();
-  navigate(`/u/${newProfile._id}`);
+    if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText);
+      }
+  
+    const newProfile = await res.json();
+
+      // Redirect to the newly created profile's page
+    navigate(`/u/${newProfile._id}`);
+    } catch (err) {
+        setError(err?.message || "Submission failed.");
+    } finally {
+      setLoading(false);
+    }
 }
+
+
   
   return (
     <div className="p-4">
       <h1 className="text-2xl font-semibold mb-4">Create Profile</h1>
+
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <input
           name="name"
@@ -76,14 +98,14 @@ export default function CreateProfile() {
           type="file"
           accept="image/*"
           onChange={handleFileChange}
-          required
           className="p-2 border rounded"
         />
         <button
+          disabled={loading}
           type="submit"
           className="p-2 bg-blue-500 text-gray-50 font-semibold rounded"
         >
-          Submit
+          {loading ? "Creating…" : "Submit"}
         </button>
       </form>
     </div>
