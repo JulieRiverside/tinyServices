@@ -29,6 +29,9 @@ export default function Profile() {
   
   return (
     <div className="p-4">
+       {profile.photo && (
+            <img src={profile.photo} alt={`${profile.name}`} className="w-32 h-32 object-cover mb-4" />
+       )}
       <h1 className="text-2xl font-semibold mb-2">{profile.name}</h1>
       <p>Service: {profile.serviceType}</p>
       <p>Location: {profile.area}</p>

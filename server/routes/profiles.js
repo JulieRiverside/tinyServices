@@ -13,6 +13,24 @@ router.post("/", async (req, res) => {
   }
 });
 
+router.post('/profiles', async (req, res) => {
+  try {
+    // photo is base64 in this case
+    const { name, serviceType, area, whatsapp, photo } = req.body;
+
+    if (!name || !serviceType || !area || !whatsapp) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+  
+    const profile = new Profile({ name, serviceType, area, whatsapp, photo });
+    await profile.save();
+
+    res.json(profile);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
 // GET ALL or Filter by area and service
 router.get("/", async (req, res) => {
   const { area, service } = req.query;

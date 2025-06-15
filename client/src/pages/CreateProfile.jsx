@@ -4,11 +4,21 @@ import { createProfile } from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateProfile() {
-  const [form, setForm] = useState({ name: "", serviceType: "", area: "", whatsapp: "" });
+  const [form, setForm] = useState({ name: "", serviceType: "", area: "", whatsapp: "" ,photo: ""});
   const navigate = useNavigate();
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleFileChange(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setForm({ ...form, photo: reader.result });
+    };
+    reader.readAsDataURL(file);
   }
   
   async function handleSubmit(e) {
@@ -56,6 +66,13 @@ export default function CreateProfile() {
           value={form.whatsapp}
           onChange={handleChange}
           placeholder="Your WhatsApp number"
+          required
+          className="p-2 border rounded"
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
           required
           className="p-2 border rounded"
         />
