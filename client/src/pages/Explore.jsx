@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { fetchProfiles } from "../services/api";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Explore() {
   const [profiles, setProfiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     async function loadProfiles(){
@@ -10,32 +15,57 @@ export default function Explore() {
         const data = await fetchProfiles();
         setProfiles(data);
       } catch (err) {
-        console.error(err);
+        setError(err);
+      } finally{
+        setLoading(false);
       }
     }
     loadProfiles();
   }, []);
 
+  if (loading) return <LoadingSpinner />;
+  if (error) return <p className="p-4 text-red-500">{error?.message}</p>;
+
+  // Filter by searchTerm
+  const filtered = profiles.filter(profile =>
+    profile.serviceType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    profile.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    profile.name.toLowerCase().includes(searchTerm.toLowerCase()) 
+  );
+
   return (
     <div className="p-4">
+      <input
+        type="text"
+        placeholder="Search by service, area or name"
+        className="border p-2 mb-4 w-full"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
       <h1 className="text-2xl font-semibold mb-4">Explore Services</h1>
-      {profiles.length > 0 ? (
-        <ul className="space-y-2">
-          {profiles.map(profile => (
-            <li key={profile._id} className="p-4 border rounded shadow">
+      <div className="grid gap-4">
+        {filtered.length > 0 ? (
+          filtered.map((profile) => (
+            <div key={profile._id} className="p-4 border rounded-md">
+              <img src={profile.photo || "/fallback.jpg"} alt="" className="w-32 h-32 object-cover mb-4" />
+              <h2 className="text-lg font-semibold">{profile.name}</h2>
+              <p>Service: {profile.serviceType}</p>
+              <p>Location: {profile.area}</p>
               <a
-                className="text-blue-500 font-semibold"
-                href={`/u/${profile.username}`}
+                className="text-green-500 underline mt-2 block"
+                href={`https://wa.me/${profile.whatsapp}`}
+                target="_blank"
+                rel="noreferrer"
               >
-                {profile.name} - {profile.serviceType}
+                Contact on WhatsApp
               </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Loading profiles...</p>
-      )}
+            </div>
+          ))
+        ) : (
+          <p>No profiles match your search</p>
+        )}
 
+      </div>
     </div>
   )
 }

@@ -12,13 +12,16 @@ export async function fetchProfiles(){
 }
 
 // Get a single profile by username
-export async function fetchProfile(username){
-    const res = await fetch(`${API_BASE}/profiles/${username}`);
-    if (!res.ok) {
-        throw new Error('Profile not found');
-    }
-    return res.json();
+// src/services/api.js
+export async function fetchProfiles() {
+  const res = await fetch(`${import.meta.env.VITE_API_BASE}/profiles`);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch profiles.");
+  }
+  return res.json();
 }
+
 
 // Create a new profile
 export async function createProfile(data){
