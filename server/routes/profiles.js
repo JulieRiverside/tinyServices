@@ -47,6 +47,18 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// GET /api/profiles/my
+router.get('/my', auth, async (req, res) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id });
+    if (!profile) return res.status(404).json({ message: "No profile found" });
+    res.json(profile);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // (PUT and DELETE can be added later if needed)
 // Update profile
 router.put("/:id", auth, upload.single("photo"), async (req, res) => {

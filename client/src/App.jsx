@@ -35,12 +35,6 @@ function App() {
         </Route>
       </Routes>
 
-      {/* If authenticated and has no profile, show button to create profile
-      {currentUser && !currentUser?.hasProfile && (
-        <Link to="/create" className="bg-green-500 p-2">
-          Create Your Profile
-        </Link>)
-      } */}
     </Router>
   )
 }

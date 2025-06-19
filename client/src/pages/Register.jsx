@@ -33,8 +33,6 @@ export default function Register() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      console.log("Registering at:", `${import.meta.env.VITE_API_BASE}/api/auth/register`);
-
 
       if (!res.ok) throw new Error(await res.text());
 
@@ -51,7 +49,29 @@ export default function Register() {
 
       await login(token);
       toast.success("Registration successful!");
-      navigate("/profile"); // Redirect to profile
+
+
+      // Fetch user to get their role
+      const userRes = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+      });
+      const user = await userRes.json();
+
+      if (user.role === "provider") {
+      // Check if profile exists
+      const profileRes = await fetch(`${import.meta.env.VITE_API_BASE}/api/profiles/my`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (profileRes.ok) {
+        const profile = await profileRes.json();
+        navigate(`/profiles/${profile._id}`); // ✅ redirect to existing profile
+      } else {
+        navigate("/create"); // ❌ no profile yet
+      }
+      } else {
+          navigate("/"); // regular user
+      } 
     } catch (err) {
       setError(err?.message || "Registration failed.");
       toast.error(err?.message || "Registration failed.");

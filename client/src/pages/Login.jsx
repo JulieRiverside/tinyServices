@@ -33,8 +33,27 @@ export default function Login() {
 
         await login(token);
         toast.success("Login successful!");
-        navigate("/profile"); // Redirect to profile
+        // Fetch role
+    const userRes = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const user = await userRes.json();
+
+    if (user.role === "provider") {
+      const profileRes = await fetch(`${import.meta.env.VITE_API_BASE}/api/profiles/my`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (profileRes.ok) {
+        const profile = await profileRes.json();
+        navigate(`/profiles/${profile._id}`);
       } else {
+        navigate("/create");
+      }
+    } else {
+      navigate("/");
+    }
+    } else {
         toast.error("Invalid credentials.");
       }
     } catch (err) {
