@@ -3,13 +3,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { getMyProfile } from "../services/api"; // ✅ make sure this is defined correctly
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
-
   const { login } = useAuthContext();
 
   function handleChange(e) {
@@ -19,7 +18,6 @@ export default function Login() {
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/login`, {
@@ -28,36 +26,45 @@ export default function Login() {
         body: JSON.stringify(form),
       });
 
-      if (res.ok) {
-        const { token } = await res.json();
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Invalid credentials");
+      }
 
-        await login(token);
-        toast.success("Login successful!");
-        // Fetch role
-    const userRes = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const user = await userRes.json();
+      const { token } = await res.json();
+      await login(token); // Sets currentUser
 
-    if (user.role === "provider") {
-      const profileRes = await fetch(`${import.meta.env.VITE_API_BASE}/api/profiles/my`, {
-        headers: { Authorization: `Bearer ${token}` }
+      // ✅ Fetch current user info
+      const userRes = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (profileRes.ok) {
-        const profile = await profileRes.json();
-        navigate(`/profiles/${profile._id}`);
-      } else {
-        navigate("/create");
+      if (!userRes.ok) {
+        throw new Error("Failed to fetch user info");
       }
-    } else {
-      navigate("/");
-    }
-    } else {
-        toast.error("Invalid credentials.");
+
+      const user = await userRes.json();
+
+      // ✅ Show only one success toast
+      toast.success("Login successful!");
+
+      if (user.role === "user") {
+        navigate("/");
+      } else if (user.role === "provider") {
+        try {
+          const profile = await getMyProfile();
+          if (profile) {
+            navigate(`/profiles/${profile._id}`);
+          } else {
+            navigate("/create");
+          }
+        } catch {
+          navigate("/create");
+        }
       }
     } catch (err) {
-      toast.error("Login failed.");
+      console.error(err);
+      toast.error(err.message || "Login failed.");
     } finally {
       setLoading(false);
     }
@@ -94,5 +101,5 @@ export default function Login() {
         </button>
       </form>
     </div>
-  )
+  );
 }

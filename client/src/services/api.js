@@ -9,7 +9,7 @@ export async function fetchProfiles(){
 
 export async function fetchProfile(id){
     const res = await fetch(`${API_BASE}/api/profiles/${id}`);
-    if (!res.ok) throw new Error('Profile not found');
+    if (!res.ok) return null;
     return res.json();
 }
 
@@ -24,6 +24,17 @@ export async function createProfile(data){
     if (!res.ok) throw new Error(await res.text()); 
     return res.json();
 }
+
+export async function getMyProfile() {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${API_BASE}/api/profiles/my`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+
 
 export async function updateProfile(id, formData){
     const token = localStorage.getItem('token'); 

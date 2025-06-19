@@ -37,6 +37,21 @@ router.get("/", async (req, res) => {
   res.json(profiles);
 });
 
+// GET /api/profiles/my
+router.get('/my', auth, async (req, res) => {
+  try {
+    console.log("Looking up profile for userId:", req.userId);
+    const profile = await Profile.findOne({ owner: req.userId });
+    if (!profile) return res.status(404).json({ message: "No profile found" });
+    res.json(profile);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
 // GET by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -47,17 +62,20 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// GET /api/profiles/my
-router.get('/my', auth, async (req, res) => {
+
+
+// GET /api/profiles/user/:userId → get profile by userId
+router.get('/user/:id', async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id });
-    if (!profile) return res.status(404).json({ message: "No profile found" });
+    const profile = await Profile.findOne({ owner: req.params.userId });
+    if (!profile) return res.status(404).json({ message: "Profile not found" });
     res.json(profile);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 // (PUT and DELETE can be added later if needed)
 // Update profile

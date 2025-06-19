@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { getMyProfile } from "../services/api";
+
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -57,23 +59,17 @@ export default function Register() {
       });
       const user = await userRes.json();
 
-      if (user.role === "provider") {
-      // Check if profile exists
-      const profileRes = await fetch(`${import.meta.env.VITE_API_BASE}/api/profiles/my`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (profileRes.ok) {
-        const profile = await profileRes.json();
-        navigate(`/profiles/${profile._id}`); // ✅ redirect to existing profile
-      } else {
-        navigate("/create"); // ❌ no profile yet
+      if (user.role === "user") {
+        navigate("/"); // Normal user → go home
+      } else if (user.role === "provider") {
+        const profile = await getMyProfile();
+        if (profile) {
+          navigate(`/profiles/${profile._id}`); // redirect to their profile
+        } else {
+          navigate("/create"); // profile doesn't exist
+        }
       }
-      } else {
-          navigate("/"); // regular user
-      } 
     } catch (err) {
-      setError(err?.message || "Registration failed.");
       toast.error(err?.message || "Registration failed.");
     } finally {
       setLoading(false);
