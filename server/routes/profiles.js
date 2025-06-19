@@ -3,13 +3,12 @@ const express = require('express');
 const Profile = require('../models/Profile'); // your Mongoose Model
 const upload = require('../cloudinaryStorage'); // multer configured with Cloudinary storage
 
+const auth = require('../middleware/auth')
 const router = express.Router();
 
 
 // CREATE
-router.post("/", upload.single("photo"), async (req, res) => {
-  console.log('req.body >>>', req.body);
-  console.log('req.file >>>', req.file);
+router.post("/", auth,upload.single("photo"), async (req, res) => {
   try {
     const { name, serviceType, area, whatsapp } = req.body;
 
@@ -19,8 +18,7 @@ router.post("/", upload.single("photo"), async (req, res) => {
     // photo is already a Cloudinary URL thanks to multer-storage-cloudinary
     const photo = req.file?.path;
 
-    const profile = await Profile.create({ name, serviceType, area, whatsapp, photo });
-
+    const profile = await Profile.create({name, serviceType, area, whatsapp, photo, owner: req.userId});
     res.json(profile);
   } catch (err) {
     res.status(500).json({ message: err?.message || "Server Error" });
@@ -50,5 +48,31 @@ router.get("/:id", async (req, res) => {
 });
 
 // (PUT and DELETE can be added later if needed)
+// Update profile
+router.put("/:id", auth, upload.single("photo"), async (req, res) => {
+  try {
+    const profile = await Profile.findById(req.params.id);
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found" });
+    }
+    if (profile.owner.toString() !== req.userId) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+    const { name, serviceType, area, whatsapp } = req.body;
+    if (name) profile.name = name;
+    if (serviceType) profile.serviceType = serviceType;
+    if (area) profile.area = area;
+    if (whatsapp) profile.whatsapp = whatsapp;
+    if (req.file?.path) profile.photo = req.file.path;
+
+    await profile.save();
+
+    res.json(profile);
+  } catch (err) {
+    res.status(500).json({ message: err?.message || "Server Error" });
+  }
+});
+
+
 
 module.exports = router;

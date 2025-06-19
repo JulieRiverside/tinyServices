@@ -1,3 +1,5 @@
+//src/components/SearchProfiles.jsx
+
 import { useState, useEffect } from "react";
 
 function SearchProfiles() {

@@ -6,7 +6,8 @@ const ProfileSchema = new mongoose.Schema({
   serviceType: { type: String, required: true },
   area: { type: String, required: true },
   whatsapp: { type: String, required: true },
-  photo: { type: String }
+  photo: { type: String },
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Profile', ProfileSchema);

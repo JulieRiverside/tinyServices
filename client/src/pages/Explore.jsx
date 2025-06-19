@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLocation ,Link} from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { fetchProfiles } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
-import SearchProfiles from "../components/SearchProfiles";
 
 export default function Explore() {
   const [profiles, setProfiles] = useState([]);
@@ -17,7 +16,7 @@ export default function Explore() {
   const [searchTerm, setSearchTerm] = useState(search || ""); // control search with state
 
   useEffect(() => {
-    async function loadProfiles(){
+    async function loadProfiles() {
       try {
         const data = await fetchProfiles();
         setProfiles(data);
@@ -34,18 +33,17 @@ export default function Explore() {
   if (error) return <p className="p-4 text-red-500">{error?.message}</p>;
 
   // Filter by searchTerm
-  const filtered = profiles.filter(profile =>
-    profile.serviceType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.name.toLowerCase().includes(searchTerm.toLowerCase()) 
+  const filtered = profiles.filter(
+    (profile) =>
+      profile.serviceType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.area.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      profile.name.toLowerCase().includes(searchTerm.toLowerCase()) 
   );
 
   return (
     <div className="p-4">
       {/* Search input for quick search */}
       <div className="p-4 shadow-md rounded mb-6">
-        {/* You can reuse SearchProfiles or simply put a search field here */}
-        {/* If you want, you can connect SearchProfiles to setSearchTerm */}
         <input
           type="text"
           placeholder="Search by service, area, or name"
@@ -63,20 +61,23 @@ export default function Explore() {
         {filtered.length > 0 ? (
           filtered.map((profile) => (
             <Link to={`/profiles/${profile._id}`} key={profile._id}>
-            <div key={profile._id} className="p-4 border rounded-md">
-              <img src={profile.photo || "/fallback.jpg"} alt="" className="w-32 h-32 object-cover mb-4" />
-              <h2 className="text-lg font-semibold">{profile.name}</h2>
-              <p>Service: {profile.serviceType}</p>
-              <p>Location: {profile.area}</p>
-              <a
-                className="text-green-500 underline mt-2 block"
-                href={`https://wa.me/${profile.whatsapp}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Contact on WhatsApp
-              </a>
-            </div>
+              <div className="p-4 border rounded-md">
+                <img src={profile.photo || "/fallback.jpg"} alt="" className="w-32 h-32 object-cover mb-4" />
+                <h2 className="text-lg font-semibold">{profile.name}</h2>
+                <p>Service: {profile.serviceType}</p>
+                <p>Location: {profile.area}</p>
+                {/* Instead of a nested <a>, we can show a button or a separate icon */}
+                <button
+                   onClick={(e) => {
+                     e.stopPropagation();
+                     e.preventDefault();
+                     window.open(`https://wa.me/${profile.whatsapp}`, '_blank');
+                   }}
+                   className="text-green-500 underline mt-2 block"
+                 >
+                   Contact on WhatsApp
+                 </button>
+              </div>
             </Link>
           ))
         ) : (

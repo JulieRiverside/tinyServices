@@ -3,12 +3,15 @@ const express = require('express')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const connectDB = require("./db")
+const authRouter = require("./routes/auth");
 
 dotenv.config()
 
 const app = express()
 app.use(cors()) // allow requests from React
 app.use(express.json()) // parse incoming json
+
+app.use("/api/auth", authRouter);
 
 // connect to db first
 connectDB()
