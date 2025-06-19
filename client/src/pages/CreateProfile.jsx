@@ -1,8 +1,9 @@
 // // src/pages/CreateProfile.jsx
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createProfile } from "../services/api";
 import { useNavigate } from "react-router-dom"
+import { useAuthContext } from "../context/AuthContext";
 
 export default function CreateProfile() {
   const [form, setForm] = useState({ name: "", serviceType: "", area: "", whatsapp: "" });
@@ -10,6 +11,33 @@ export default function CreateProfile() {
   const [error, setError] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
   const navigate = useNavigate();
+  const { currentUser } = useAuthContext();
+
+
+   // ✅ Check if profile already exists
+  useEffect(() => {
+    async function checkExistingProfile() {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("http://localhost:5000/api/profiles/me", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (res.ok) {
+          const profile = await res.json();
+          navigate(`/profiles/${profile._id}`);
+        } else {
+          setLoading(false); // No profile, proceed to show form
+        }
+      } catch (err) {
+        console.error("Error checking existing profile", err);
+        setLoading(false);
+      }
+    }
+
+    checkExistingProfile();
+  }, [navigate]);
+
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -77,6 +105,8 @@ export default function CreateProfile() {
     setLoading(false);
   }
 }
+
+ if (loading) return <p className="p-4">Loading...</p>;
 
   
   return (

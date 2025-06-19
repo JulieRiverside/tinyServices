@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
 
 export default function HomePage() {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const { currentUser } = useAuthContext();
 
   function handleSearch(e) {
     e.preventDefault();
@@ -47,19 +49,14 @@ export default function HomePage() {
       </Link>
 
       {/* Call to Action Section */}
-      <div className="mt-6 p-4 border rounded shadow-md">
-        <h2 className="text-2xl font-semibold mb-2">
-          Are you a service provider?
-        </h2>
-        <p className="mb-4">
-          Join TinyServices today and connect with more people in your area.
-        </p>
+      {!currentUser && (
         <Link
-          to="/create"
-          className="px-4 py-2 bg-green-500 text-gray-50 font-semibold rounded">
-          Create Your Profile
+          to="/register"
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+          Create a Profile
         </Link>
-      </div>
+      )}
 
     </div>
   )
