@@ -20,6 +20,9 @@ export default function Profile() {
       try {
         const data = await fetchProfile(id);
         setProfile(data);
+        console.log("currentUser.id", currentUser?.id);
+        console.log("profile.owner", profile?.owner);
+
         toast.success("Profile loaded successfully!");
         setError(null);
       } catch (err) {
@@ -36,8 +39,11 @@ export default function Profile() {
   if (error) return <p className="text-red-500 p-4">{error?.message || "Error loading profile"}</p>;
   if (!profile) return <p className="p-4">Profile not found</p>;
 
-  const isOwner =
-    currentUser?.id === profile?.user && currentUser?.role === "provider";
+  const ownerId = typeof profile?.owner === "object" ? profile.owner._id : profile.owner;
+  const isOwner = currentUser?.role === "provider" && currentUser?.id === ownerId;
+
+
+
 
 
   return (

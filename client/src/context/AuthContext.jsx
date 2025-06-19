@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
         .then(async res => {
           if (res.ok) {
             const user = await res.json();
-            setCurrentUser(user);
+            setCurrentUser({ ...user, id: user._id });
           }else {
           const text = await res.text();
           console.error("Failed to fetch user:", text);
@@ -36,7 +36,7 @@ export function AuthProvider({ children }) {
     });
     if (res.ok) {
       const user = await res.json();
-      setCurrentUser(user);
+      setCurrentUser({ ...user, id: user._id });
     }else {
     const text = await res.text();
     console.error("Login token fetch failed:", text);
