@@ -34,11 +34,17 @@ export default function EditProfile() {
   }, [id]);
 
   useEffect(() => {
-    if (profile && currentUser?.id !== profile?.user) {
+  if (profile) {
+    const ownerId =
+      typeof profile.owner === "object" ? profile.owner._id : profile.owner;
+
+    if (currentUser?.id !== ownerId) {
       toast.error("Not authorized to edit this profile.");
-      navigate("/explore"); // or wherever you want to send them back
+      navigate("/explore");
     }
-  }, [profile, currentUser]);
+  }
+}, [profile, currentUser]);
+
 
 
   const handleChange = (e) => {

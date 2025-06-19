@@ -20,9 +20,6 @@ export default function Profile() {
       try {
         const data = await fetchProfile(id);
         setProfile(data);
-        console.log("currentUser.id", currentUser?.id);
-        console.log("profile.owner", profile?.owner);
-
         toast.success("Profile loaded successfully!");
         setError(null);
       } catch (err) {
@@ -39,11 +36,20 @@ export default function Profile() {
   if (error) return <p className="text-red-500 p-4">{error?.message || "Error loading profile"}</p>;
   if (!profile) return <p className="p-4">Profile not found</p>;
 
-  const ownerId = typeof profile?.owner === "object" ? profile.owner._id : profile.owner;
-  const isOwner = currentUser?.role === "provider" && currentUser?.id === ownerId;
+  // Extract owner id safely from profile
+const profileOwnerId = typeof profile?.owner === "object"
+  ? profile.owner._id
+  : profile.owner;
+
+// Then check ownership
+const isOwner =
+  currentUser?.role === "provider" &&
+  currentUser?.id === profileOwnerId;
 
 
-
+  console.log("CurrentUser:", currentUser);
+console.log("Profile owner ID:", profileOwnerId);
+console.log("Is owner?", isOwner);
 
 
   return (

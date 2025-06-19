@@ -1,4 +1,4 @@
-//src/context/AuthContext.jsx
+// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect, useContext } from "react";
 
 const AuthContext = createContext();
@@ -6,44 +6,56 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Retrieve and validate existing token on refresh
+  // Fetch current user from token
+  const fetchUserFromToken = async (token) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("❌ Failed to fetch user:", text);
+        return null;
+      }
+
+      const user = await res.json();
+
+      if (!user || !user._id) {
+        console.error("⚠️ User data is null or missing _id");
+        return null;
+      }
+
+      return { ...user, id: user._id }; // normalize
+    } catch (err) {
+      console.error("🚨 Error fetching user from token:", err);
+      return null;
+    }
+  };
+
+  // On refresh
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (token) {
-      fetch(`${import.meta.env.VITE_API_BASE}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-        .then(async res => {
-          if (res.ok) {
-            const user = await res.json();
-            setCurrentUser({ ...user, id: user._id });
-          }else {
-          const text = await res.text();
-          console.error("Failed to fetch user:", text);
-        }
-        })
-        .catch(err => console.error(err)); 
+      fetchUserFromToken(token).then((user) => {
+        if (user) setCurrentUser(user);
+        else logout();
+      });
     }
   }, []);
 
-  // Define a login function to reuse after logging in
+  // Login logic
   const login = async (token) => {
     localStorage.setItem("token", token);
-    // fetch current user immediately after obtaining a new token
-    const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.ok) {
-      const user = await res.json();
-      setCurrentUser({ ...user, id: user._id });
-    }else {
-    const text = await res.text();
-    console.error("Login token fetch failed:", text);
-  }
+    const user = await fetchUserFromToken(token);
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      logout();
+      console.error("⚠️ Login failed to fetch user profile");
+    }
   };
 
-  // Define a logout function
   const logout = () => {
     localStorage.removeItem("token");
     setCurrentUser(null);
@@ -53,9 +65,9 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{ currentUser, setCurrentUser, login, logout }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
-export function useAuthContext(){
+export function useAuthContext() {
   return useContext(AuthContext);
 }

@@ -55,12 +55,13 @@ router.get('/my', auth, async (req, res) => {
 // GET by ID
 router.get("/:id", async (req, res) => {
   try {
-    const profile = await Profile.findById(req.params.id);
+    const profile = await Profile.findById(req.params.id).populate("owner", "_id");
     res.json(profile);
   } catch (err) {
-    res.status(404).json({ error:'Profile not found' })
+    res.status(404).json({ error: 'Profile not found' });
   }
 });
+
 
 
 
@@ -78,16 +79,26 @@ router.get('/user/:id', async (req, res) => {
 
 
 // (PUT and DELETE can be added later if needed)
-// Update profile
 router.put("/:id", auth, upload.single("photo"), async (req, res) => {
   try {
-    const profile = await Profile.findById(req.params.id);
+    const profile = await Profile.findById(req.params.id).populate("owner");
+
     if (!profile) {
       return res.status(404).json({ message: "Profile not found" });
     }
-    if (profile.owner.toString() !== req.userId) {
-      return res.status(403).json({ message: "Not authorized" });
+
+    // Normalize both sides to strings
+    const profileOwnerId =
+      typeof profile.owner === "object"
+        ? profile.owner._id?.toString()
+        : profile.owner?.toString();
+
+    if (profileOwnerId !== req.userId) {
+      console.log("⛔ Not authorized:", { profileOwnerId, requester: req.userId });
+      return res.status(403).json({ message: "Not authorized to edit this profile" });
     }
+
+    // Proceed with update
     const { name, serviceType, area, whatsapp } = req.body;
     if (name) profile.name = name;
     if (serviceType) profile.serviceType = serviceType;
@@ -96,13 +107,12 @@ router.put("/:id", auth, upload.single("photo"), async (req, res) => {
     if (req.file?.path) profile.photo = req.file.path;
 
     await profile.save();
-
     res.json(profile);
+
   } catch (err) {
+    console.error("🚨 Edit error:", err);
     res.status(500).json({ message: err?.message || "Server Error" });
   }
 });
-
-
 
 module.exports = router;

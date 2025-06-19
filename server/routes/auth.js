@@ -19,9 +19,7 @@ router.post("/login", async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).send("Invalid credentials");
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d"
-    });
+   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.json({ token, userId: user._id });
   } catch (err) {
@@ -46,6 +44,8 @@ router.post("/register", async (req, res) => {
       password: hash,
       role, // Optional if your schema handles default
     });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.json({ message: "User created", userId: user._id });
   } catch (err) {
