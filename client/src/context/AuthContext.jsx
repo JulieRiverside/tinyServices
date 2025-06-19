@@ -34,8 +34,6 @@ export function AuthProvider({ children }) {
     const res = await fetch(`${import.meta.env.VITE_API_BASE}/api/auth/me`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    console.log("Raw response URL:", res.url);
-    console.log("Raw response content-type:", res.headers.get("content-type"));
     if (res.ok) {
       const user = await res.json();
       setCurrentUser(user);

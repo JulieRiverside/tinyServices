@@ -37,6 +37,8 @@ export default function Profile() {
   if (!profile) return <p className="p-4">Profile not found</p>;
 
   const isOwner = currentUser?.id === profile?.owner; // assuming `profile` has a `user` field with owner's id
+  console.log("Current user:", currentUser);
+  console.log("Profile:", profile);
 
   return (
     <div className="p-4">
@@ -46,11 +48,12 @@ export default function Profile() {
       <p>Location: {profile.area}</p>
 
       {/* If the current user owns this profile, show the edit button */}
-      {currentUser?.id === profile?.user && (
-  <Link to={`/profiles/${profile._id}/edit`} className="bg-blue-500 p-2 mt-4">
+      {currentUser?.role === "provider" && currentUser?.id === profile?.user && (
+  <Link to={`/profiles/${profile._id}/edit`} className="bg-blue-500 text-white p-2 mt-4 rounded inline-block">
     Edit Profile
   </Link>
 )}
+
 
       <a
         href={`https://wa.me/${profile.whatsapp}`}

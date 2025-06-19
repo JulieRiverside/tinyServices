@@ -12,12 +12,15 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuthContext} from "./context/AuthContext";
 
+import Navbar from "./components/Navbar"; 
+
 function App() {
    const { currentUser } = useAuthContext();
    
   return (
     <Router>
       <ToastContainer />
+      <Navbar /> 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profiles/:id" element={<Profile />} />
