@@ -10,54 +10,57 @@ export default function HomePage() {
   function handleSearch(e) {
     e.preventDefault();
     if (search.trim()) {
-      // Redirect to explore with search as a query parameter
       navigate(`/explore?search=${encodeURIComponent(search)}`);
     }
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-4xl font-semibold mb-4">
+    <div className="min-h-screen flex flex-col items-center justify-center text-center bg-gray-50 px-4 py-10">
+      <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
         Find Local Services in Your Area
       </h1>
-      <p className="mb-6">
-        TinyServices lets you find and connect with local service providers effortlessly. Whether you need a plumber, a henna artist, or a fitness instructor, we've got you covered.
+      <p className="text-gray-600 max-w-xl mb-6">
+        TinyServices helps you connect with local providers — plumbers, henna artists, tutors, and more.
       </p>
 
-      {/* Quick search form */}
-      <form onSubmit={handleSearch} className="flex space-x-2 mb-6">
+      {/* Search */}
+      <form
+        onSubmit={handleSearch}
+        className="flex w-full max-w-lg gap-2 mb-6"
+      >
         <input
           type="text"
           placeholder="Search by service or area"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          required
-          className="flex-1 p-2 border rounded"
+          className="flex-1 p-3 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
           type="submit"
-          className="p-2 bg-blue-500 text-gray-50 font-semibold rounded"
+          className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition"
         >
           Search
         </button>
       </form>
-      
-      <Link
-        to="/explore"
-        className="px-4 py-2 bg-blue-500 text-gray-50 font-semibold rounded">
-        Explore Now
-      </Link>
 
-      {/* Call to Action Section */}
-      {!currentUser && (
+      {/* CTA Buttons */}
+      <div className="flex gap-4">
         <Link
-          to="/register"
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          to="/explore"
+          className="bg-blue-500 text-white px-5 py-2 rounded-lg hover:bg-blue-600 transition"
         >
-          Create a Profile
+          Explore Now
         </Link>
-      )}
 
+        {!currentUser && (
+          <Link
+            to="/register"
+            className="border border-blue-600 text-blue-600 px-5 py-2 rounded-lg hover:bg-blue-50 transition"
+          >
+            Create a Profile
+          </Link>
+        )}
+      </div>
     </div>
-  )
+  );
 }

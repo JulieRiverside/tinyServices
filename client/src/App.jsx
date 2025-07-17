@@ -20,7 +20,9 @@ function App() {
   return (
     <Router>
       <ToastContainer />
+      <div className="min-h-screen flex flex-col">
       <Navbar /> 
+      <main className="flex-grow">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/profiles/:id" element={<Profile />} />
@@ -37,6 +39,11 @@ function App() {
           <Route index element={<EditProfile />} />
         </Route>
       </Routes>
+      </main>
+      </div>
+      <footer className="bg-gray-100 text-center text-sm py-4 text-gray-600 mt-auto">
+  © 2025 TinyServices · Built with ❤️
+</footer>
 
     </Router>
   )

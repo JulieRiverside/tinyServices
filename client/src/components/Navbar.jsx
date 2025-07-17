@@ -13,52 +13,62 @@ export default function Navbar() {
     navigate("/");
   }
 
-useEffect(() => {
-  async function fetchProfile() {
-    if (currentUser?.role === "provider") {
-      try {
-        const profile = await getMyProfile();
-        console.log("Fetched profile in Navbar:", profile); // ✅ Add this
-        if (profile?._id) {
-          setMyProfileId(profile._id);
+  useEffect(() => {
+    async function fetchProfile() {
+      if (currentUser?.role === "provider") {
+        try {
+          const profile = await getMyProfile();
+          if (profile?._id) setMyProfileId(profile._id);
+        } catch (err) {
+          console.log("Error fetching profile:", err);
         }
-      } catch (err) {
-        console.log("Error fetching my profile:", err);
       }
-    } 
-  }
+    }
 
-  fetchProfile();
-}, [currentUser]);
-
+    fetchProfile();
+  }, [currentUser]);
 
   return (
-    <nav className="flex justify-between items-center px-4 py-2 shadow bg-white">
-      <Link to="/" className="text-xl font-bold">TinyServices</Link>
+    <nav className="sticky top-0 z-50 bg-white shadow-md py-3 px-6 flex justify-between items-center">
+      <Link to="/" className="text-2xl font-bold text-blue-600">
+        TinyServices
+      </Link>
 
-      <div className="flex gap-4 items-center">
-        <Link to="/explore" className="text-blue-500">Explore</Link>
+      <div className="flex items-center gap-4 text-sm">
+        <Link to="/explore" className="text-gray-700 hover:text-blue-600">
+          Explore
+        </Link>
 
         {currentUser?.role === "provider" && myProfileId && (
-          <Link to={`/profiles/${myProfileId}`} className="text-green-600 font-semibold">
+          <Link
+            to={`/profiles/${myProfileId}`}
+            className="text-green-600 font-medium hover:underline"
+          >
             My Profile
           </Link>
         )}
 
         {currentUser ? (
           <>
-            <span className="text-sm">{currentUser.email}</span>
+            <span className="text-gray-500 hidden sm:inline">{currentUser.email}</span>
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white px-3 py-1 rounded"
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
             >
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="text-blue-500">Login</Link>
-            <Link to="/register" className="text-blue-500">Register</Link>
+            <Link to="/login" className="text-blue-500 font-medium hover:underline">
+              Login
+            </Link>
+            <Link
+              to="/register"
+              className="border border-blue-500 text-blue-500 px-3 py-1 rounded hover:bg-blue-50 transition"
+            >
+              Register
+            </Link>
           </>
         )}
       </div>
