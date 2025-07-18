@@ -84,16 +84,18 @@ export default function EditProfile() {
   if (!profile) return <p>Profile not found</p>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Edit Profile</h1>
-      <form onSubmit={handleSubmit}>
+  <div className="w-screen min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
+    <div className="bg-white p-6 rounded-xl shadow w-full max-w-md">
+      <h1 className="text-2xl font-semibold mb-4 text-center">Edit Profile</h1>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="name"
           value={profile.name}
           onChange={handleChange}
           placeholder="Name"
           required
-          className="border p-2 block mb-2 w-full"
+          className="border p-2 rounded w-full"
         />
         <input
           name="area"
@@ -101,7 +103,7 @@ export default function EditProfile() {
           onChange={handleChange}
           placeholder="Location"
           required
-          className="border p-2 block mb-2 w-full"
+          className="border p-2 rounded w-full"
         />
         <input
           name="serviceType"
@@ -109,30 +111,32 @@ export default function EditProfile() {
           onChange={handleChange}
           placeholder="Service Type"
           required
-          className="border p-2 block mb-2 w-full"
+          className="border p-2 rounded w-full"
         />
         <input
           name="whatsapp"
           value={profile.whatsapp}
           onChange={handleChange}
-          placeholder="Whatsapp Number"
+          placeholder="WhatsApp Number"
           required
-          className="border p-2 block mb-2 w-full"
+          className="border p-2 rounded w-full"
         />
         <input
           name="photo"
           type="file"
           onChange={handleFileChange}
-          className="border p-2 block mb-2 w-full"
+          className="border p-2 rounded w-full"
         />
         <button
           type="submit"
-          className="bg-blue-500 text-gray-100 p-2 mt-4"
+          className="bg-blue-500 text-white font-semibold p-2 rounded w-full hover:bg-blue-600 transition"
         >
           Update Profile
         </button>
       </form>
     </div>
-  )
+  </div>
+);
+
 }
 

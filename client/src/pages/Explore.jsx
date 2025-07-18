@@ -41,51 +41,56 @@ export default function Explore() {
   );
 
   return (
-    <div className="p-4">
-      {/* Search input for quick search */}
-      <div className="p-4 shadow-md rounded mb-6">
+    <div className="w-screen min-h-screen bg-gray-50 px-4 py-8 w-full">
+      {/* Search input */}
+      <div className="w-full mb-8">
         <input
           type="text"
           placeholder="Search by service, area, or name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="p-2 w-full border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <h1 className="text-2xl font-semibold mb-4">
+      <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
         Explore Services
       </h1>
 
-      <div className="grid gap-4">
+      {/* Profiles Grid */}
+      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 w-full">
         {filtered.length > 0 ? (
           filtered.map((profile) => (
-            <Link to={`/profiles/${profile._id}`} key={profile._id}>
-              <div className="p-4 border rounded-md">
-                <img src={profile.photo || "/fallback.jpg"} alt="" className="w-32 h-32 object-cover mb-4" />
-                <h2 className="text-lg font-semibold">{profile.name}</h2>
-                <p>Service: {profile.serviceType}</p>
-                <p>Location: {profile.area}</p>
-                {/* Instead of a nested <a>, we can show a button or a separate icon */}
-                <button
-                   onClick={(e) => {
-                     e.stopPropagation();
-                     e.preventDefault();
-                     window.open(`https://wa.me/${profile.whatsapp}`, '_blank');
-                   }}
-                   className="text-green-500 underline mt-2 block"
-                 >
-                   Contact on WhatsApp
-                 </button>
-              </div>
+            <Link
+              to={`/profiles/${profile._id}`}
+              key={profile._id}
+              className="block bg-white p-4 rounded-xl shadow hover:shadow-md transition border border-gray-200"
+            >
+              <img
+                src={profile.photo || "/fallback.jpg"}
+                alt={profile.name}
+                className="w-full h-48 object-cover rounded-md mb-4"
+              />
+              <h2 className="text-xl font-semibold text-gray-900">{profile.name}</h2>
+              <p className="text-gray-700">Service: {profile.serviceType}</p>
+              <p className="text-gray-700">Location: {profile.area}</p>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  window.open(`https://wa.me/${profile.whatsapp}`, "_blank");
+                }}
+                className="text-green-600 underline mt-2 block text-sm"
+              >
+                Contact on WhatsApp
+              </button>
             </Link>
           ))
         ) : (
-          <p>No profiles match your search</p>
+          <p className="text-center text-gray-500 col-span-full">No profiles match your search.</p>
         )}
-
       </div>
     </div>
-  )
+  );
 }
 

@@ -70,36 +70,40 @@ export default function Login() {
     }
   }
 
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Login</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-          className="p-2 border mb-2 block w-full"
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-          className="p-2 border mb-2 block w-full"
-        />
-        <button
-          disabled={loading}
-          type="submit"
-          className="p-2 bg-blue-500 text-gray-100 w-full"
-        >
-          {loading ? "Logging in…" : "Login"}
-        </button>
-      </form>
-    </div>
+    <div className="w-screen min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+    <h1 className="text-2xl font-semibold mb-4">Login</h1>
+    <form onSubmit={handleSubmit}>
+      <input
+        name="email"
+        type="email"
+        placeholder="Email"
+        value={form.email}
+        onChange={handleChange}
+        required
+        className="p-2 border mb-2 block w-full"
+      />
+      <input
+        name="password"
+        type="password"
+        placeholder="Password"
+        value={form.password}
+        onChange={handleChange}
+        required
+        className="p-2 border mb-2 block w-full"
+      />
+      <button
+        disabled={loading}
+        type="submit"
+        className="p-2 bg-blue-500 text-white w-full"
+      >
+        {loading ? "Logging in…" : "Login"}
+      </button>
+    </form>
+  </div>
+</div>
+
   );
 }

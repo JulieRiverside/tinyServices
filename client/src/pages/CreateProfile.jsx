@@ -110,19 +110,20 @@ export default function CreateProfile() {
 
   
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Create Profile</h1>
+  <div className="w-screen min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
+    <div className="w-full max-w-md">
+      <h1 className="text-2xl font-semibold mb-4 text-center">Create Profile</h1>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 bg-white p-6 rounded-xl shadow">
         <input
           name="name"
           value={form.name}
           onChange={handleChange}
           placeholder="Full name"
           required
-          className="p-2 border rounded"
+          className="p-2 border border-gray-300 rounded"
         />
         <input
           name="serviceType"
@@ -130,7 +131,7 @@ export default function CreateProfile() {
           onChange={handleChange}
           placeholder="Service (e.g., plumber, mehendi)"
           required
-          className="p-2 border rounded"
+          className="p-2 border border-gray-300 rounded"
         />
         <input
           name="area"
@@ -138,31 +139,32 @@ export default function CreateProfile() {
           onChange={handleChange}
           placeholder="Your area or pincode"
           required
-          className="p-2 border rounded"
+          className="p-2 border border-gray-300 rounded"
         />
-        
         <input
           name="whatsapp"
           value={form.whatsapp}
           onChange={handleChange}
           placeholder="Your WhatsApp number"
           required
-          className="p-2 border rounded"
+          className="p-2 border border-gray-300 rounded"
         />
         <input
           type="file"
           name="photo"
           onChange={handleFileChange}
-          className="p-2 border rounded"
+          className="p-2 border border-gray-300 rounded"
         />
         <button
           disabled={loading}
           type="submit"
-          className="p-2 bg-blue-500 text-gray-50 font-semibold rounded"
+          className="p-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition"
         >
           {loading ? "Creating…" : "Submit"}
         </button>
       </form>
     </div>
-  )
+  </div>
+);
+
 }

@@ -77,55 +77,58 @@ export default function Register() {
   }
 
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Register</h1>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+    <div className="w-screen min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        <h1 className="text-2xl font-semibold mb-6 text-center text-gray-800">Register</h1>
 
-      <form onSubmit={handleSubmit} className="space-y-2">
-        <input
-          name="email"
-          type="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-          className="p-2 border block w-full"
-        />
-        <input
-          name="username"
-          type="text"
-          placeholder="Username"
-          value={form.username}
-          onChange={handleChange}
-          required
-          className="p-2 border block w-full"
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          value={form.password}
-          onChange={handleChange}
-          required
-          className="p-2 border block w-full"
-        />
-        <select
-          name="role"
-          value={form.role}
-          onChange={handleChange}
-          className="p-2 border block w-full"
-        >
-          <option value="provider">Service Provider</option>
-          <option value="user">User</option>
-        </select>
-        <button
-          disabled={loading}
-          type="submit"
-          className="p-2 bg-green-500 text-white w-full"
-        >
-          {loading ? "Registering…" : "Register"}
-        </button>
-      </form>
+        {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="email"
+            type="email"
+            placeholder="Email"
+            value={form.email}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            name="username"
+            type="text"
+            placeholder="Username"
+            value={form.username}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <input
+            name="password"
+            type="password"
+            placeholder="Password"
+            value={form.password}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="provider">Service Provider</option>
+            <option value="user">User</option>
+          </select>
+          <button
+            disabled={loading}
+            type="submit"
+            className="w-full p-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+          >
+            {loading ? "Registering…" : "Register"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

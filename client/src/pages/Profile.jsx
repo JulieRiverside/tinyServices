@@ -53,31 +53,36 @@ console.log("Is owner?", isOwner);
 
 
   return (
-    <div className="p-4">
-      <img src={profile.photo || FALLBACK_PHOTO} alt="profile photo" className="w-32 h-32 object-cover mb-4 rounded-full" />
+  <div className="w-screen min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
+    <div className="bg-white p-6 rounded-xl shadow w-full max-w-md text-center">
+      <img
+        src={profile.photo || FALLBACK_PHOTO}
+        alt="profile photo"
+        className="w-32 h-32 object-cover mb-4 rounded-full mx-auto"
+      />
       <h1 className="text-2xl font-semibold mb-2">{profile.name}</h1>
-      <p>Service: {profile.serviceType}</p>
-      <p>Location: {profile.area}</p>
+      <p className="text-gray-700 mb-1">Service: {profile.serviceType}</p>
+      <p className="text-gray-700 mb-4">Location: {profile.area}</p>
 
-      {/* Only show Edit if current user is a provider and owns this profile */}
       {isOwner && (
         <Link
           to={`/profiles/${profile._id}/edit`}
-          className="inline-block bg-blue-500 text-white px-4 py-2 rounded mt-4"
+          className="inline-block bg-blue-500 text-white px-4 py-2 rounded mb-4"
         >
           Edit Profile
         </Link>
       )}
 
-
       <a
         href={`https://wa.me/${profile.whatsapp}`}
         target="_blank"
         rel="noreferrer"
-        className="text-green-500 underline mt-4 block"
+        className="text-green-600 underline block"
       >
         Contact on WhatsApp
       </a>
     </div>
-  )
+  </div>
+);
+
 }
