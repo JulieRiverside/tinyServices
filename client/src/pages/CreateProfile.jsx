@@ -19,7 +19,7 @@ export default function CreateProfile() {
     async function checkExistingProfile() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/api/profiles/me", {
+        const res = await fetch("https://tinyservices.onrender.com/api/profiles/me", {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -71,14 +71,14 @@ export default function CreateProfile() {
       formData.append("whatsapp", form.whatsapp);
       formData.append("photo", photoFile);
   
-      res = await fetch("http://localhost:5000/api/profiles", { 
+      res = await fetch("https://tinyservices.onrender.com/api/profiles", { 
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
     } else {
-      res = await fetch("http://localhost:5000/api/profiles", { 
+      res = await fetch("https://tinyservices.onrender.com/api/profiles", { 
         method: "POST",
         headers: { "Content-Type": "application/json" ,
           Authorization: `Bearer ${token}`

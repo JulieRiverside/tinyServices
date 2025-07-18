@@ -11,7 +11,7 @@ function SearchProfiles() {
   async function handleSearch(e) {
     e.preventDefault();
 
-    let url = "http://localhost:5000/api/profiles";
+    let url = "https://tinyservices.onrender.com/api/profiles";
     const params = [];
 
     if (area) params.push(`area=${encodeURIComponent(area)}`);
